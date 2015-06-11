@@ -9,20 +9,28 @@ function start_room(){
 
 
 
-
+    var timeBefore = new Date();
     ask_datetime_to_start(function(data){
 
-      
+      var timeAfter = new Date();
       
       var start_date_server = dateFromISO8601(data.start_date_time_to_server);
 
       var start_date = dateFromISO8601(data.start_date_time_iso_client);
 
+      var current_gmt_server_date = dateFromISO8601(data.current_date_time_to_client);
+      current_gmt_server_date = new Date(current_gmt_server_date - (timeAfter - timeBefore));
 
-      //Corrigir data de inicio
+      var server_time_reminder_to_start = start_date - current_gmt_server_date;
 
+      var now = new Date();
 
-      countdown(start_date, data.duration);
+      
+      console.log(server_time_reminder_to_start);
+      console.log((server_time_reminder_to_start/(1000*60)) + " Minuts");
+      var start_date_ = new Date(now.getTime()+server_time_reminder_to_start);
+
+      countdown(start_date_, data.duration);
 
     });
   }
@@ -40,10 +48,9 @@ function start_room(){
 
   function countdown(start_date, duration){
 
-    var now = new Date();
-    var end_date = new Date(start_date.setMinutes(start_date.getMinutes() + duration));
-
     function run_countdown(){
+
+      var end_date = new Date(start_date.setMinutes(start_date.getMinutes() + duration));
 
       var dateString = (end_date.getMonth() + 1) + "/" + end_date.getDate() + "/" + end_date.getFullYear() + " " + end_date.getHours() + ":" + end_date.getMinutes() + ":" + end_date.getSeconds();
 
@@ -61,12 +68,24 @@ function start_room(){
      
     }
 
+    
     var now = new Date();
-    var remainder = new Date(start_date - now);
+    var remainder = (start_date.getTime() - now.getTime());
 
-    console.log(remainder.getMilliseconds());
+    console.log('NOw Date');
+    console.log(now);
 
-    setTimeout(run_countdown, remainder.getMilliseconds());
+    console.log('Start Date');
+    console.log(start_date);
+
+    console.log('Time to wait');
+    console.log((remainder/(1000*60)) + " Minuts");
+
+    alert("A sala abrir as "+ start_date);
+
+
+
+    setTimeout(run_countdown, remainder);
 
   }
 
